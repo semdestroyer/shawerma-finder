@@ -2,6 +2,8 @@
 
 
 namespace App\Services\Telegram\Core;
+use App\Events\OnUpdate;
+use Illuminate\Support\Facades\Redis;
 use TelegramBot\Api\BotApi;
 use EvPeriodic;
 class Updater
@@ -9,13 +11,29 @@ class Updater
     public function handleUpdates(string $token)
     {
         $bot = new BotApi($token);
-        $updates = $bot->getUpdates();
-        if($updates)
+
+
+        while (true)
         {
-           $update = new Update();
-           $update->setChatID($updates[]);
-           $update->setData($updates[]);
-        };
+            $updates = $bot->getUpdates();
+
+            $savedups = TeleCache::loadUpdates();
+            foreach ($updates as $update)
+            {
+                if (empty($savedups))
+                {$savedups = [];}
+
+                if (!in_array($update->getUpdateId(),$savedups))
+                {
+                    $savedups[] = $update->getUpdateId();
+                    TeleCache::saveUpdates($savedups);
+                    event(new OnUpdate($update, $bot));
+
+                }
+            }
+            sleep(1);
+
+        }
     }
 
 
