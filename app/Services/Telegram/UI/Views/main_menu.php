@@ -1,16 +1,13 @@
 <?php
 return [
     "type" => "text",
-    "text" => "test",
+    "text" => "Приветствую тебя любитель шавермы🌯 \n Выбери один из пунктов:",
     "reply_type" => "buttons",
-    "keys" => [[
-        ["text" => "button \xF0\x9F\x8F\xA0","request_location"=>true],["text" => "button"]],
-        [["text" => "button"]]
-    ],
     "buttons" => [[
-        ["text" => "button","callback_data" => "someString"],
-        ["text" => "button","callback_data" => "someString"]],
-    ],
+        ["text" => "Добавить шаверму","callback_data"=>"add"],
 
-    "state" => ""
+        ["text" => "Найти шаверму","callback_data"=>"find"],
+         ]
+    ],
+    "state" => null
 ];
