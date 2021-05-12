@@ -8,6 +8,8 @@ class MenuController
 {
     public function getView($name)
     {
-        return include("UI/Views");
+        return include("UI/Views/".$name.'.php');
     }
+
+
 }

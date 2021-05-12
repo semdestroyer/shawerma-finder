@@ -15,18 +15,21 @@ class UpdateController
 {
     public function onUpdate(Update $update,BotApi $bot)
     {
-//        $bot->sendMessage($update->getMessage()->getChat()->getId(),"ля ты крыса");
-        $main = include("UI/Views/main_menu.php");
-        $shawerma =   include("UI/Views/near_shawerma.php");
-        $shawermapoint =  include("UI/Views/shawerma_point.php");
-        $view = $main;
+        $mc = new MenuController();
+        $routes = $mc->getView("routes");
         if(!empty($update->getMessage()))
         {
-            $this->render($view, $bot, $update);
-        }
-        else if (!empty($update->getCallbackQuery()))
-        {
+            if(!empty($routes[$update->getMessage()->getText()]))
+            {
+                $this->render($routes[$update->getMessage()->getText()], $bot, $update);
+            }
 
+        }
+        else if (!empty($update->getCallbackQuery()) && !empty($routes[
+            $update->getCallbackQuery()->getData()]))
+        {
+            call_user_func($routes[
+            $update->getCallbackQuery()->getData()]);
         }
 
     }
