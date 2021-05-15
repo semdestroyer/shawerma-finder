@@ -19,8 +19,6 @@ class PointController extends Controller
     {
 
     }
-
-
     public function create($name,$photo,$lattitude,$longtitude,$rating,$telegram)
     {
         $shawerma = new Shawerma();
