@@ -31,6 +31,8 @@ class UpdateController
                 if (!empty($route[$update->getMessage()->getText()]))
                 {
                  //   $this->render($route[$update->getMessage()->getText()]);
+                    $func = $route[$update->getMessage()->getText()];
+                    $func->$route[$update->getMessage()->getText()][1];
                 }
             }
         }
