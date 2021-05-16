@@ -1,9 +1,8 @@
 <?php
 
 
-namespace App\Services\Telegram\Core;
-
-
+namespace App\Services\Telegram\Facades;
+use App\Services\Telegram\Core\TelegramCaching;
 use Illuminate\Support\Facades\Facade;
 
 class TeleCache extends Facade

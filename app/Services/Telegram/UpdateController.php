@@ -7,6 +7,7 @@ namespace App\Services\Telegram;
 
 
 use App\Models\TelegramUser;
+use App\Services\Telegram\Facades\TeleView;
 use TelegramBot\Api\BotApi;
 use TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
 use TelegramBot\Api\Types\ReplyKeyboardMarkup;
@@ -18,52 +19,31 @@ class UpdateController
     private $update;
     public function onUpdate(Update $update,BotApi $bot)
     {
-        $mc = new MenuController();
-        $routes = $mc->getView("routes");
+
+        $routes = TeleView::getView("routes");
         $this->bot = $bot;
         $this->update = $update;
 
         if(!empty($update->getMessage()))
         {
-
-            if(!empty($routes[$update->getMessage()->getText()]))
+            foreach ($routes as $route)
             {
-                $this->render($routes[$update->getMessage()->getText()]);
-            }
-
-        }
-        else if (!empty($update->getCallbackQuery()) && !empty($routes[
-            $update->getCallbackQuery()->getData()]))
-        {
-            call_user_func($routes[
-            $update->getCallbackQuery()->getData()]);
-        }
-
-    }
-    private function render($menu_array)
-    {
-        if($menu_array["type"] == "text")
-        {
-            if ($menu_array["reply_type"] == "keyboard")
-            {
-                $keyboard = new ReplyKeyboardRemove();
-                if (!empty($menu_array["keys"]))
+                if (!empty($route[$update->getMessage()->getText()]))
                 {
-                    $keyboard = new ReplyKeyboardMarkup($menu_array["keys"]);
+                 //   $this->render($route[$update->getMessage()->getText()]);
                 }
             }
-            if ($menu_array["reply_type"] == "buttons")
+        }
+        else if (!empty($update->getCallbackQuery()))
+        {
+            foreach ($routes as $route)
             {
-                $keyboard = new ReplyKeyboardRemove();
-                if (!empty($menu_array["buttons"]))
-                {
-                    $keyboard = new InlineKeyboardMarkup($menu_array["buttons"]);
+                if (!empty($route[$update->getCallbackQuery()->getData()])) {
+                    call_user_func($route[$update->getCallbackQuery()->getData()]);
                 }
             }
-
-            $this->bot->sendMessage($this->update->getMessage()->getChat()->getId(),
-                $menu_array["text"],null,null,null,$keyboard);
         }
+
     }
 
 }
