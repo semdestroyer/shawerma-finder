@@ -1,7 +1,7 @@
 <?php
 
 
-namespace App\Services\Telegram\Core;
+namespace App\Services\Telegram\UI;
 
 
 use TelegramBot\Api\BotApi;
@@ -39,7 +39,7 @@ class ViewController
     }
     public function getView($name)
     {
-        return include("UI/Views/".$name.'.php');
+        return include("Views/".$name.'.php');
     }
 
 

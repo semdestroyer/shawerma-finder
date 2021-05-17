@@ -19,31 +19,34 @@ class UpdateController
     private $update;
     public function onUpdate(Update $update,BotApi $bot)
     {
-
         $routes = TeleView::getView("routes");
         $this->bot = $bot;
         $this->update = $update;
 
         if(!empty($update->getMessage()))
         {
-            foreach ($routes as $route)
-            {
-                if (!empty($route[$update->getMessage()->getText()]))
+                if (!empty($routes[$update->getMessage()->getText()]))
                 {
                  //   $this->render($route[$update->getMessage()->getText()]);
-                    $func = $route[$update->getMessage()->getText()];
-                    $func->$route[$update->getMessage()->getText()][1];
+
+
+                    $func = new $routes[$update->getMessage()->getText()][0];
+                 // error_log(json_encode($routes[$update->getMessage()->getText()][1]));
+                    $f = $routes[$update->getMessage()->getText()][1];
+
+                    $func->$f($update);
+
                 }
-            }
+
         }
         else if (!empty($update->getCallbackQuery()))
         {
-            foreach ($routes as $route)
-            {
-                if (!empty($route[$update->getCallbackQuery()->getData()])) {
-                    call_user_func($route[$update->getCallbackQuery()->getData()]);
+
+
+                if (!empty($routes[$update->getCallbackQuery()->getData()])) {
+                    call_user_func($routes[$update->getCallbackQuery()->getData()]);
                 }
-            }
+
         }
 
     }
