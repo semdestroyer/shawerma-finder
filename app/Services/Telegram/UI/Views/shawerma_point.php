@@ -2,7 +2,7 @@
 return [
     "type" => "text",
     "text" => "Оцените",
-    "reply_type" => "keys",
+    "reply_type" => "keyboard",
     "keys" => [
         [
             ["text" => "⭐"],

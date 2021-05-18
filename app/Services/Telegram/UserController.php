@@ -5,16 +5,19 @@ namespace App\Services\Telegram;
 
 
 use App\Models\TelegramUser;
+use App\Services\Telegram\Facades\TeleView;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use TelegramBot\Api\BotApi;
 use TelegramBot\Api\Types\Update;
 
 class UserController
 {
-    public function createUser(Update $update)
+    public function createUser(BotApi $bot,Update $update)
     {
 
         $id = $update->getMessage()->getChat()->getId();
-        try {
+        try
+        {
             $user = TelegramUser::where('telegram_id', $id)->take(1)->firstOrFail();
         }
         catch (ModelNotFoundException $e)
@@ -27,5 +30,7 @@ class UserController
             $user->state = "default";
             $user->save();
         }
+        $view = TeleView::getView("main_menu");
+        TeleView::render($view,$bot,$update);
     }
 }

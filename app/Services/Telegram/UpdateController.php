@@ -25,16 +25,19 @@ class UpdateController
 
         if(!empty($update->getMessage()))
         {
-                if (!empty($routes[$update->getMessage()->getText()]))
-                {
-                 //   $this->render($route[$update->getMessage()->getText()]);
-
+                if (!empty($routes[$update->getMessage()->getText()])) {
 
                     $func = new $routes[$update->getMessage()->getText()][0];
-                 // error_log(json_encode($routes[$update->getMessage()->getText()][1]));
                     $f = $routes[$update->getMessage()->getText()][1];
+                    if (!empty($routes[$update->getMessage()->getText()][2]))
+                    {
+                        $args = !empty($routes[$update->getMessage()->getText()][2]);
+                        $func->$f($args,$update,$bot);
+                        return;
+                    }
+                    $func->$f($bot,$update);
+                    return;
 
-                    $func->$f($update);
 
                 }
 
@@ -42,11 +45,26 @@ class UpdateController
         else if (!empty($update->getCallbackQuery()))
         {
 
+            if (!empty($routes[$update->getCallbackQuery()->getData()])) {
 
-                if (!empty($routes[$update->getCallbackQuery()->getData()])) {
-                    call_user_func($routes[$update->getCallbackQuery()->getData()]);
+                $func = new $routes[$update->getCallbackQuery()->getData()][0];
+                $f = $routes[$update->getCallbackQuery()->getData()][1];
+                if (!empty($routes[$update->getCallbackQuery()->getData()][2]))
+                {
+                    //TODO: убрать фасад teleview за ненадобностью и использовать приватный
+                    // getView внутри
+                    $args = $routes[$update->getCallbackQuery()->getData()][2];
+                    $view = TeleView::getView($args);
+
+                    $func->$f($view,$bot,$update);
+
+                    return;
                 }
+                $func->$f($bot,$update);
+                return;
 
+
+            }
         }
 
     }
