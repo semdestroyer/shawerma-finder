@@ -1,19 +1,15 @@
 <?php
 return [
     "type" => "text",
-    "text" => "Получить ближайшую шаверму U+1F32F",
-    "reply_type" => "buttons",
+    "text" => "Получить ближайшую шаверму 🌯🏠",
+    "reply_type" => "keyboard",
     "keys" => [
         [
-            ["text" => "Выслать мою позицию \xF0\x9F\x8F\xA0","request_location"=>true],
-            ["text" => "Найти по адресу"]
+                ["text" => "Выслать мою позицию 🧭","request_location"=>true],
         ],
-        [["text" => "вернуться"]]
+        [
+            ["text" => "вернуться"]
+        ]
     ],
-    "buttons" => [[
-        ["text" => "button","callback_data" => "someString"],
-        ["text" => "button","callback_data" => "someString"]],
-    ],
-
-    "state" => ""
+    "state" => "WAIT_LOCATION"
 ];

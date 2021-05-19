@@ -1,12 +1,28 @@
 <?php
 return [
     "type" => "text",
-    "text" => "Шаверма на",
-    "reply_type" => "buttons",
-    "buttons" => [[
-        ["text" => "Оценить шаверму","callback_data" => "someString"],
-        ["text" => "вернуться в главное меню","callback_data" => "someString"]],
-    ],
+    "text" => "Оцените",
+    "reply_type" => "keyboard",
+    "keys" => [
+        [
+            ["text" => "⭐"],
 
+        ],
+        [
+             ["text" => "⭐⭐"],
+        ],
+        [
+            ["text" => "⭐⭐⭐"],
+
+        ],
+        [
+             ["text" => "⭐⭐⭐⭐"],
+
+        ],
+        [
+             ["text" => "⭐⭐⭐⭐⭐"],
+        ],
+
+    ],
     "state" => ""
 ];

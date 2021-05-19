@@ -15,6 +15,7 @@ class CreateShawermasTable extends Migration
     {
         Schema::create('shawermas', function (Blueprint $table) {
             $table->id();
+            $table->string("author_telegram_id");
             $table->string("longtitude");
             $table->string("latitude");
             $table->integer("rating");

@@ -3,11 +3,13 @@
 
 namespace App\Services\Telegram\Core;
 use App\Events\OnUpdate;
+use App\Services\Telegram\Facades\TeleCache;
 use Illuminate\Support\Facades\Redis;
 use TelegramBot\Api\BotApi;
 use EvPeriodic;
 class Updater
 {
+
     public function handleUpdates(string $token)
     {
         $bot = new BotApi($token);
