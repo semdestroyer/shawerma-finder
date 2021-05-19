@@ -23,22 +23,20 @@ class UpdateController
         $this->bot = $bot;
         $this->update = $update;
 
-        if(!empty($update->getMessage()))
+        if(!empty($update->getMessage()->getText()))
         {
                 if (!empty($routes[$update->getMessage()->getText()])) {
-
                     $func = new $routes[$update->getMessage()->getText()][0];
                     $f = $routes[$update->getMessage()->getText()][1];
                     if (!empty($routes[$update->getMessage()->getText()][2]))
                     {
-                        $args = !empty($routes[$update->getMessage()->getText()][2]);
-                        $func->$f($args,$update,$bot);
+                        $args = $routes[$update->getMessage()->getText()][2];
+                        $view = TeleView::getView($args);
+                        $func->$f($view,$bot,$update);
                         return;
                     }
                     $func->$f($bot,$update);
                     return;
-
-
                 }
 
         }

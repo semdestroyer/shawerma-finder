@@ -9,5 +9,7 @@ return [
         ["text" => "Найти шаверму","callback_data"=>"find"],
          ]
     ],
+    "clear_previous_reply" => true,
+    "set_one_time" => true,
     "state" => null
 ];

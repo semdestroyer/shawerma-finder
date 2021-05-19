@@ -7,6 +7,6 @@ return [
         ["text" => "Оценить шаверму","callback_data" => "someString"],
         ["text" => "вернуться","callback_data" => "someString"]],
     ],
-
+    "set_one_time" => true,
     "state" => ""
 ];
