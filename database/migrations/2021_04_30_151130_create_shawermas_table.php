@@ -16,10 +16,13 @@ class CreateShawermasTable extends Migration
         Schema::create('shawermas', function (Blueprint $table) {
             $table->id();
             $table->string("author_telegram_id");
-            $table->string("longtitude");
-            $table->string("latitude");
+            $table->string("name");
+            $table->text("description");
+            $table->float("longtitude");
+            $table->float("latitude");
             $table->integer("rating");
             $table->text("cover_photo");
+            $table->softDeletes();
             $table->timestamps();
         });
     }
