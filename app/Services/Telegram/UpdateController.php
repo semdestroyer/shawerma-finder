@@ -3,9 +3,6 @@
 
 namespace App\Services\Telegram;
 
-
-
-
 use App\Models\TelegramUser;
 use App\Services\Telegram\Facades\TeleView;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -20,10 +17,20 @@ class UpdateController
     private $update;
     public function onUpdate(Update $update,BotApi $bot)
     {
-        $routes = TeleView::getView("routes");
+
         $this->bot = $bot;
         $this->update = $update;
-        $id = $update->getMessage()->getChat()->getId();
+
+        if(!empty($update->getMessage()))
+        {
+            $id = $update->getMessage()->getChat()->getId();
+            $username = $update->getMessage()->getFrom()->getUsername();
+        }
+        else if(!empty($update->getCallbackQuery()))
+        {
+            $id = $update->getCallbackQuery()->getFrom()->getId();
+            $username = $update->getCallbackQuery()->getFrom()->getUsername();
+        }
         try
         {
             $user = TelegramUser::where('telegram_id', $id)->take(1)->firstOrFail();
@@ -33,23 +40,26 @@ class UpdateController
 
             $user = new TelegramUser();
             $user->telegram_id = $id;
-            $user->username = $update->getMessage()->getFrom()->getUsername();
+            $user->username = $username;
             $user->role = "user";
             $user->state = "default";
             $user->save();
         }
-        if($user->state != "default")
+        if($user->state != "default" || $user->state != "")
         {
-            $this->handle_callback($update,$bot);
+            $this->handle_state($user,$update,$bot);
         }
         else
         {
-            $this->handle_state();
+            $this->handle_callback($update,$bot);
         }
 
     }
     private function handle_callback(Update $update,BotApi $bot)
     {
+        $routes = TeleView::getView("routes");
+        if(!empty($update->getMessage()))
+        {
         if(!empty($update->getMessage()->getText()))
         {
             if (!empty($routes[$update->getMessage()->getText()])) {
@@ -66,7 +76,7 @@ class UpdateController
                 return;
             }
 
-        }
+        }}
         else if (!empty($update->getCallbackQuery()))
         {
 
@@ -91,9 +101,16 @@ class UpdateController
             }
         }
     }
-    private function handle_state()
+    private function handle_state(TelegramUser $user,Update $update,BotApi $bot)
     {
-
+        $routes = TeleView::getView("routes");
+        if(!empty($update->getMessage()))
+        {
+                $func = new $routes[$user->state][0];
+                $f = $routes[$user->state][1];
+                $func->$f($bot,$update);
+                return;
+        }
     }
 
 }

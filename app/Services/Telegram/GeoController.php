@@ -4,6 +4,7 @@
 namespace App\Services\Telegram;
 
 use App\Models\Shawerma;
+use App\Models\TelegramUser;
 use App\User;
 use TelegramBot\Api\BotApi;
 use TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
@@ -13,42 +14,43 @@ use TelegramBot\Api\Types\Update;
 
 class GeoController
 {
-    public function addPointGeo(Update  $update, BotApi $bot)
+    public function addPointGeo(BotApi $bot, Update  $update)
     {
-        $user = User::where("telegram_id",$update->getMessage()->getFrom()->getId())->take(1)->get();
+        $user = TelegramUser::where("telegram_id",$update->getMessage()->getFrom()->getId())->take(1)->get();
         $shawerma = New Shawerma();
+        $shawerma->author_telegram_id = $update->getMessage()->getFrom()->getId();
         $shawerma->longtitude = $update->getMessage()->getLocation()->getLongitude();
         $shawerma->latitude = $update->getMessage()->getLocation()->getLatitude();
         $shawerma->save();
         $bot->sendMessage($update->getMessage()->getFrom()->getId()
             ,"Пришлите название шавермы(текстом)",null,false,null,new ReplyKeyboardRemove());
-        $user->state = "WAIT_NAME";
+        $user->state = "wait_name";
     }
 
-    public function addPointName(Update  $update, BotApi $bot)
+    public function addPointName(BotApi $bot, Update  $update)
     {
-        $user = User::where("telegram_id",$update->getMessage()->getFrom()->getId())->take(1)->get();
+        $user = TelegramUser::where("telegram_id",$update->getMessage()->getFrom()->getId())->take(1)->get();
         $shawerma = New Shawerma();
         $shawerma->name = $update->getMessage()->getText();
         $shawerma->save();
         $bot->sendMessage($update->getMessage()->getFrom()->getId()
             ,"Пришлите описание шавермы(текстом)",null,false,null,new ReplyKeyboardRemove());
-        $user->state = "WAIT_DESCRIPTION";
+        $user->state = "wait_description";
     }
 
-    public function addPointDesc(Update  $update, BotApi $bot)
+    public function addPointDesc(BotApi $bot, Update  $update)
     {
-        $user = User::where("telegram_id",$update->getMessage()->getFrom()->getId())->take(1)->get();
+        $user = TelegramUser::where("telegram_id",$update->getMessage()->getFrom()->getId())->take(1)->get();
         $shawerma = New Shawerma();
         $shawerma->description = $update->getMessage()->getText();
         $shawerma->save();
         $bot->sendMessage($update->getMessage()->getFrom()->getId()
             ,"Пришлите фото шавермы",null,false,null,new ReplyKeyboardRemove());
-        $user->state = "WAIT_PHOTO";
+        $user->state = "wait_photo";
     }
-    public function addPointPhoto(Update  $update, BotApi $bot)
+    public function addPointPhoto(BotApi $bot, Update  $update)
     {
-        $user = User::where("telegram_id",$update->getMessage()->getFrom()->getId())->take(1)->get();
+        $user = TelegramUser::where("telegram_id",$update->getMessage()->getFrom()->getId())->take(1)->get();
         $shawerma = New Shawerma();
         $shawerma->photo = $update->getMessage()->getPhoto();
         $shawerma->save();
@@ -56,7 +58,7 @@ class GeoController
         Teleview::render($view,$bot,$update);
         $user->state = "";
     }
-    public function getNearPoints(Update $update, BotApi $bot)
+    public function getNearPoints(BotApi $bot, Update  $update)
     {
         //TODO подумать над отношениями
         $shawermas = Shawerma::where("telegram_id",
@@ -73,7 +75,7 @@ class GeoController
              }
         }
     }
-    public function getPoint(Update $update, BotApi $bot)
+    public function getPoint(BotApi $bot, Update  $update)
     {
         $shawerma = Shawerma::where("telegram_id",
             $update->getMessage()->getFrom()->getId())->take(1)->get();

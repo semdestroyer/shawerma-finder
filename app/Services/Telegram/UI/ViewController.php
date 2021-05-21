@@ -48,8 +48,13 @@ class ViewController
                     $menu_array["text"], null, null, null, $keyboard);
             }
 
-
-            $id = $update->getMessage()->getChat()->getId();
+            if(!empty($update->getMessage())) {
+                $id = $update->getMessage()->getChat()->getId();
+            }
+            else
+                {
+                    $id = $update->getCallbackQuery()->getFrom()->getId();
+                }
             try
             {
                 $user = TelegramUser::where('telegram_id', $id)->take(1)->firstOrFail();
