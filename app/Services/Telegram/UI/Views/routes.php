@@ -10,5 +10,5 @@ return
     'wait_location_create'=>[\App\Services\Telegram\GeoController::class,'addPointGeo'],
     'wait_name'=>[\App\Services\Telegram\GeoController::class,'addPointName'],
     'wait_photo'=>[\App\Services\Telegram\GeoController::class,'addPointPhoto'],
-    'wait_description'=>[\App\Services\Telegram\GeoController::class,'addPointDescription']
+    'wait_description'=>[\App\Services\Telegram\GeoController::class,'addPointDesc']
 ];

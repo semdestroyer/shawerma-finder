@@ -42,10 +42,11 @@ class UpdateController
             $user->telegram_id = $id;
             $user->username = $username;
             $user->role = "user";
-            $user->state = "default";
+            $user->state = "";
             $user->save();
         }
-        if($user->state != "default" || $user->state != "")
+        $state = $user->state;
+        if(!empty($state))
         {
             $this->handle_state($user,$update,$bot);
         }
