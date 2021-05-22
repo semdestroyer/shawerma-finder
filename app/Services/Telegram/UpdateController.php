@@ -80,20 +80,28 @@ class UpdateController
         }}
         else if (!empty($update->getCallbackQuery()))
         {
+            $query = json_decode($update->getCallbackQuery()->getData(),true);
+            $route = $query["route"];
+            $data = $query["data"];
+            if (!empty($route)) {
 
-            if (!empty($routes[$update->getCallbackQuery()->getData()])) {
-
-                $func = new $routes[$update->getCallbackQuery()->getData()][0];
-                $f = $routes[$update->getCallbackQuery()->getData()][1];
-                if (!empty($routes[$update->getCallbackQuery()->getData()][2]))
+                $func = new $route[0];
+                $f = $routes[1];
+                if (!empty($route[2]))
                 {
                     //TODO: убрать фасад teleview за ненадобностью и использовать приватный
                     // getView внутри
-                    $args = $routes[$update->getCallbackQuery()->getData()][2];
+                    $args = $route[2];
                     $view = TeleView::getView($args);
 
                     $func->$f($view,$bot,$update);
 
+                    return;
+                }
+                elseif (!empty($data))
+                {
+                    $args = $data;
+                    $func->$f($args,$bot,$update);
                     return;
                 }
                 $func->$f($bot,$update);

@@ -65,29 +65,38 @@ class GeoController
     }
     public function getNearPoints(BotApi $bot, Update  $update)
     {
+        $count = 0;
         //TODO подумать над отношениями
-        $shawermas = Shawerma::where("telegram_id",
+        $shawermas = Shawerma::where("author_telegram_id",
             $update->getMessage()->getFrom()->getId())->get();
         $loc = $update->getMessage()->getLocation();
         foreach ($shawermas as $shawerma)
         {
             if($this->inRadius($shawerma,$loc))
              {
-                    $keyboard = new InlineKeyboardMarkup([["text"=>"показать на карте",
-                        "callback_data"=>["point"=>$shawerma->id]]]);
+                    $count++;
+                    $keyboard = new InlineKeyboardMarkup([[["text"=>"показать на карте",
+                        "callback_data"=>json_encode(["route"
+                        =>"point", "data"=>$shawerma->id])]]]);
                     $bot->sendMessage($update->getMessage()->getFrom()->getId()
                         ,$shawerma->name,null,false,null,$keyboard);
              }
         }
+        if($count == 0)
+        {
+            $bot->sendMessage($update->getMessage()->getFrom()->getId()
+                ,"Поблизости нет шавермы😒",null,false,null,new ReplyKeyboardRemove());
+        }
     }
-    public function getPoint(BotApi $bot, Update  $update)
+    public function getPoint(int $id,BotApi $bot, Update  $update)
     {
-        $shawerma = Shawerma::where("telegram_id",
-            $update->getMessage()->getFrom()->getId())->take(1)->get();
-        $keyboard = new InlineKeyboardMarkup([["text"=>"оценить шаверму",
-            "callback_data"=>"rate"]]);
-        $bot->sendMessage($update->getMessage()->getFrom()->getId()
+        $chatId= $update->getMessage()->getFrom()->getId();
+        $shawerma = Shawerma::where("id",$id)->first();
+        $keyboard = new InlineKeyboardMarkup([[["text"=>"оценить шаверму",
+            "callback_data"=>json_encode(["route"=>"rate"])]]]);
+        $reply = $bot->sendMessage($chatId
             ,$shawerma->name,null,false,null,$keyboard);
+        $bot->sendLocation($chatId,$shawerma->latitude,$shawerma->longtitude,$reply->getMessageId());
 
     }
     //TODO: сделать нормальный перевод координат
@@ -96,9 +105,9 @@ class GeoController
     private function inRadius(Shawerma $shawerma, Location $loc)
     {
         if ($shawerma->longtitude + 0.5 > $loc->getLongitude()
-            && $shawerma->longtitude + 0.5 < $loc->getLongitude()
-            && $shawerma->latitude + 0.5 < $loc->getLatitude()
-            && $shawerma->latitude + 0.5 < $loc->getLatitude()
+            && $shawerma->longtitude - 0.5 < $loc->getLongitude()
+            && $shawerma->latitude + 0.5 > $loc->getLatitude()
+            && $shawerma->latitude - 0.5 < $loc->getLatitude()
         )
         {
             return true;
