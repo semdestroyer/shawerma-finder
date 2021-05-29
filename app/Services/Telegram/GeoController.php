@@ -18,6 +18,7 @@ class GeoController
     public function addPointGeo(BotApi $bot, Update  $update)
     {
         $user = TelegramUser::where("telegram_id",$update->getMessage()->getFrom()->getId())->first();
+        $this->checkReturnState($bot,$update);
         $shawerma = New Shawerma();
         $shawerma->author_telegram_id = $update->getMessage()->getFrom()->getId();
         $shawerma->longtitude = $update->getMessage()->getLocation()->getLongitude();
@@ -32,6 +33,7 @@ class GeoController
     public function addPointName(BotApi $bot, Update  $update)
     {
         $user = TelegramUser::where("telegram_id",$update->getMessage()->getFrom()->getId())->first();
+        $this->checkReturnState($bot,$update);
         $shawerma = Shawerma::where("author_telegram_id",$update->getMessage()->getFrom()->getId())->first();
         $shawerma->name = $update->getMessage()->getText();
         $shawerma->save();
@@ -44,6 +46,7 @@ class GeoController
     public function addPointDesc(BotApi $bot, Update  $update)
     {
         $user = TelegramUser::where("telegram_id",$update->getMessage()->getFrom()->getId())->first();
+        $this->checkReturnState($bot,$update);
         $shawerma = Shawerma::where("author_telegram_id",$update->getMessage()->getFrom()->getId())->first();
         $shawerma->description = $update->getMessage()->getText();
         $shawerma->save();
@@ -52,16 +55,19 @@ class GeoController
         $user->state = "wait_photo";
         $user->save();
     }
-    public function addPointPhoto(BotApi $bot, Update  $update)
+    public function addPointPhoto(BotApi $bot, Update  $update, TelegramFileController $tgf)
     {
         $user = TelegramUser::where("telegram_id",$update->getMessage()->getFrom()->getId())->first();
+        $this->checkReturnState($bot,$update);
         $shawerma = Shawerma::where("author_telegram_id",$update->getMessage()->getFrom()->getId())->first();
         $shawerma->cover_photo = $update->getMessage()->getPhoto();
+        $tgf->savePhoto($update,$bot);
         $shawerma->save();
         $view = Teleview::getView("main_menu");
         Teleview::render($view,$bot,$update);
         $user->state = "";
         $user->save();
+
     }
     public function getNearPoints(BotApi $bot, Update  $update)
     {
@@ -88,15 +94,20 @@ class GeoController
                 ,"Поблизости нет шавермы😒",null,false,null,new ReplyKeyboardRemove());
         }
     }
-    public function getPoint(int $id,BotApi $bot, Update  $update)
+    public function getPoint(int $id,BotApi $bot, Update  $update, TelegramFileController $tgf)
     {
         $chatId= $update->getMessage()->getFrom()->getId();
         $shawerma = Shawerma::where("id",$id)->first();
         $keyboard = new InlineKeyboardMarkup([[["text"=>"оценить шаверму",
             "callback_data"=>json_encode(["route"=>"rate"])]]]);
-        $reply = $bot->sendMessage($chatId
+       $photo = $tgf->loadPhoto($shawerma->cover_photo,$update,$bot);
+        /* $reply = $bot->sendMessage($chatId
             ,$shawerma->name,null,false,null,$keyboard);
-        $bot->sendLocation($chatId,$shawerma->latitude,$shawerma->longtitude,$reply->getMessageId());
+       */
+        $reply = $bot->sendPhoto($chatId
+            ,$photo,$shawerma->name,null,false,null,$keyboard);
+
+       $bot->sendLocation($chatId,$shawerma->latitude,$shawerma->longtitude,$reply->getMessageId());
 
     }
     //TODO: сделать нормальный перевод координат
@@ -114,5 +125,14 @@ class GeoController
         }
         return false;
 
+    }
+    public function checkReturnState(BotApi $bot, Update  $update)
+    {
+        if($update->getMessage()->getText() == "Вернуться")
+        {
+            $user = TelegramUser::where("telegram_id",$update->getMessage()->getFrom()->getId())->first();
+            $user->state = "";
+            $user->save();
+        }
     }
 }
