@@ -18,7 +18,7 @@ class CreateTelegramUsersTable extends Migration
             $table->string("username");
             $table->string("telegram_id");
             $table->string("role");
-            $table->string("state");
+            $table->string("state")->nullable();
             $table->timestamps();
         });
     }

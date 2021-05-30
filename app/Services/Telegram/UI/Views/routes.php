@@ -1,8 +1,14 @@
 <?php
 return
 [
-    '/start'=>[\App\Services\Telegram\UserController::class,"createUser"],
+    '/start'=>[\App\Services\Telegram\CommandController::class,"start"],
+    'Вернуться'=>[\App\Services\Telegram\UI\ViewController::class,'render','main_menu'],
     'default'=>['',''],
-    'add'=>[\App\Services\Telegram\UI\ViewController::class,'render','shawerma_point'],
+    'add'=>[\App\Services\Telegram\UI\ViewController::class,'render','create_shawerma'],
     'find'=>[\App\Services\Telegram\UI\ViewController::class,'render','near_shawerma'],
+    'wait_location_near'=>[\App\Services\Telegram\GeoController::class,'getNearPoints'],
+    'wait_location_create'=>[\App\Services\Telegram\GeoController::class,'addPointGeo'],
+    'wait_name'=>[\App\Services\Telegram\GeoController::class,'addPointName'],
+    'wait_photo'=>[\App\Services\Telegram\GeoController::class,'addPointPhoto'],
+    'wait_description'=>[\App\Services\Telegram\GeoController::class,'addPointDesc']
 ];
